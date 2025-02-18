@@ -18,12 +18,11 @@ public class Invoice {
     }
 
     public void addProduct(Product product, Integer quantity) {
+        if (quantity == 0){
+            throw new IllegalArgumentException("Quantity can not be empty");
+        }
         quantityOfProducts.merge(product,quantity,Integer::sum);
     }
-
-
-
-
 
     public BigDecimal getSubtotal() {
         BigDecimal getSubTotal = BigDecimal.ZERO;
