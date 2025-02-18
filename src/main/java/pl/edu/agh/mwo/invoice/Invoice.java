@@ -14,12 +14,15 @@ public class Invoice {
 
 
     public void addProduct(Product product) {
+        if (product == null) {
+            throw new IllegalArgumentException("Product can not be null");
+        }
         quantityOfProducts.merge(product,1, Integer::sum);
     }
 
     public void addProduct(Product product, Integer quantity) {
-        if (quantity == 0){
-            throw new IllegalArgumentException("Quantity can not be empty");
+        if (quantity == 0 || quantity < 0){
+            throw new IllegalArgumentException("Quantity can not be empty or minus");
         }
         quantityOfProducts.merge(product,quantity,Integer::sum);
     }
