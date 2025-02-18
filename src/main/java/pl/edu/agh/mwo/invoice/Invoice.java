@@ -21,7 +21,7 @@ public class Invoice {
     }
 
     public BigDecimal getTax() {
-        return null;
+        return BigDecimal.ZERO;
     }
 
     public BigDecimal getTotal() {
