@@ -26,12 +26,12 @@ public class Invoice {
 
 
     public BigDecimal getSubtotal() {
-        BigDecimal totalPrice = BigDecimal.ZERO;
+        BigDecimal getSubTotal = BigDecimal.ZERO;
         for (Map.Entry<Product, Integer> position : quantityOfProducts.entrySet()) {
-            totalPrice = totalPrice.add(position.getKey().getPrice().multiply(BigDecimal.valueOf(position.getValue())));
+            getSubTotal = getSubTotal.add(position.getKey().getPrice().multiply(BigDecimal.valueOf(position.getValue())));
         }
 
-        return totalPrice;
+        return getSubTotal;
     }
 
     public BigDecimal getTax() {
@@ -39,6 +39,11 @@ public class Invoice {
     }
 
     public BigDecimal getTotal() {
-        return BigDecimal.ZERO;
+        BigDecimal totalPrice = BigDecimal.ZERO;
+        for (Map.Entry<Product, Integer> position : quantityOfProducts.entrySet()) {
+            totalPrice = totalPrice.add(position.getKey().getPriceWithTax().multiply(BigDecimal.valueOf(position.getValue())));
+        }
+
+        return totalPrice;
     }
 }
