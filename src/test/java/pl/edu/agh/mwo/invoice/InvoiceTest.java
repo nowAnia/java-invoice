@@ -7,7 +7,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import pl.edu.agh.mwo.invoice.Invoice;
+import org.w3c.dom.ls.LSOutput;
 import pl.edu.agh.mwo.invoice.product.DairyProduct;
 import pl.edu.agh.mwo.invoice.product.OtherProduct;
 import pl.edu.agh.mwo.invoice.product.Product;
@@ -125,4 +125,61 @@ public class InvoiceTest {
     public void testAddingNullProduct() {
         invoice.addProduct(null);
     }
+
+
+    @Test
+    public void testInvoiceNumber(){
+        int number = invoice.getNumber();
+        Assert.assertThat(number, Matchers.greaterThan(0));
+    }
+
+    @Test
+    public void testInvoiceNumberHaveConsequentNumber() {
+        int number1 = new Invoice().getNumber();
+        int number2 = new Invoice().getNumber();
+        Assert.assertThat(number1, Matchers.equalTo(number2 - 1));
+    }
+
+    @Test
+    public void amountOfProductsIsGreaterThanZero() {
+        invoice.addProduct(new TaxFreeProduct("Chleb", new BigDecimal("5")), 2);
+        invoice.addProduct(new DairyProduct("Chedar", new BigDecimal("10")), 3);
+        invoice.addProduct(new OtherProduct("Pinezka", new BigDecimal("0.01")), 1000);
+        Assert.assertThat(invoice.getNumberOfProducts(), Matchers.greaterThan(0));
+    }
+
+    @Test
+    public void amountOfProductsIsEqualNumberOfProducts() {
+        invoice.addProduct(new TaxFreeProduct("Chleb", new BigDecimal("5")), 2);
+        invoice.addProduct(new DairyProduct("Chedar", new BigDecimal("10")), 3);
+        invoice.addProduct(new OtherProduct("Pinezka", new BigDecimal("0.01")), 1000);
+        Assert.assertThat(invoice.getNumberOfProducts(), Matchers.equalTo(1005));
+    }
+
+    @Test
+    public void shouldPrintInvoiceWithItems(){
+        invoice.addProduct(new TaxFreeProduct("Kubek", new BigDecimal("5")), 2);
+        invoice.addProduct(new DairyProduct("Kozi Serek", new BigDecimal("10")), 3);
+        String result = invoice.printListOfProducts();
+        int invoiceNumber = invoice.getNumber();
+        String expectedMessage = "Number: "+invoiceNumber+"\n"+
+                """
+                Kubek 2 10
+                Kozi Serek 3 32.40
+                Amount of products: 5
+                """;
+        Assert.assertEquals(expectedMessage, result);
+    }
+
+    @Test
+    public void shouldPrintTemplateWithoutItems(){
+        String result = invoice.printListOfProducts();
+        int invoiceNumber = invoice.getNumber();
+        String expectedMessage = "Number: "+invoiceNumber+"\n"+
+                """
+                Amount of products: 0
+                """;
+        Assert.assertEquals(expectedMessage, result);
+    }
+
 }

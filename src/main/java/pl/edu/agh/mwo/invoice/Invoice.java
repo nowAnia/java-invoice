@@ -1,19 +1,28 @@
 package pl.edu.agh.mwo.invoice;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import pl.edu.agh.mwo.invoice.product.Product;
 
 public class Invoice {
    // private Collection<Product> products= new ArrayList<>();
-    private Map<Product, Integer> quantityOfProducts = new HashMap<>();
+    private Map<Product, Integer> quantityOfProducts = new LinkedHashMap<>();
+    private static int number = 0;
+    private int numberOfProducts = 0;
 
+    public Invoice() {
+        Invoice.number++;
+    }
+
+    public int getNumber() {
+        return number;
+    }
 
     public void addProduct(Product product) {
+        numberOfProducts++;
         if (product == null) {
             throw new IllegalArgumentException("Product can not be null");
         }
@@ -21,6 +30,7 @@ public class Invoice {
     }
 
     public void addProduct(Product product, Integer quantity) {
+        numberOfProducts +=quantity;
         if (quantity == 0 || quantity < 0){
             throw new IllegalArgumentException("Quantity can not be empty or minus");
         }
@@ -53,4 +63,21 @@ public class Invoice {
 
         return totalPrice;
     }
+
+    public int getNumberOfProducts() {
+        return numberOfProducts;
+    }
+
+    public String printListOfProducts() {
+        StringBuilder message = new StringBuilder("Number: " + number + "\n");
+
+        for (Map.Entry<Product, Integer> position : quantityOfProducts.entrySet()) {
+            BigDecimal price = position.getKey().getPriceWithTax().multiply(BigDecimal.valueOf(position.getValue()));
+            message.append(position.getKey().getName() +" "+ position.getValue() + " " + price + "\n");
+        }
+        message.append("Amount of products: "+ numberOfProducts + "\n");
+        return message.toString();
+    }
+
+
 }
