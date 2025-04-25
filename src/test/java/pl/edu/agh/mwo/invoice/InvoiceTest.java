@@ -182,4 +182,17 @@ public class InvoiceTest {
         Assert.assertEquals(expectedMessage, result);
     }
 
+    @Test
+    public void shouldDuplicateProductAfterAddingTheSameProduct(){
+        invoice.addProduct(new TaxFreeProduct("Kubek", new BigDecimal("5")));
+        invoice.addProduct(new TaxFreeProduct("Kubek", new BigDecimal("5")));
+        String result = invoice.printListOfProducts();
+        int invoiceNumber = invoice.getNumber();
+        String expectedMessage = "Number: "+invoiceNumber+"\n"+
+                """
+                Kubek 2 10
+                Amount of products: 2
+                """;
+        Assert.assertEquals(expectedMessage, result);
+    }
 }
