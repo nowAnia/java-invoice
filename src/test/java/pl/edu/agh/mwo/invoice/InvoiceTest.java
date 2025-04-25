@@ -1,6 +1,7 @@
 package pl.edu.agh.mwo.invoice;
 
 import java.math.BigDecimal;
+import java.util.function.BinaryOperator;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -8,10 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import org.w3c.dom.ls.LSOutput;
-import pl.edu.agh.mwo.invoice.product.DairyProduct;
-import pl.edu.agh.mwo.invoice.product.OtherProduct;
-import pl.edu.agh.mwo.invoice.product.Product;
-import pl.edu.agh.mwo.invoice.product.TaxFreeProduct;
+import pl.edu.agh.mwo.invoice.product.*;
 
 public class InvoiceTest {
     private Invoice invoice;
@@ -195,4 +193,41 @@ public class InvoiceTest {
                 """;
         Assert.assertEquals(expectedMessage, result);
     }
+
+    @Test
+    public void shouldReturnProperPriceForBottleOfWine(){
+        ExciseProducts resling = new BottleOfWine("Resling", new BigDecimal(5));
+        Assert.assertThat(resling.getPrice(), Matchers.equalTo(new BigDecimal(5)));
+    }
+
+    @Test
+    public void shouldReturnProperPriceWithTaxAndExciseForBottleOfWine(){
+        ExciseProducts resling = new BottleOfWine("Carlo Rossi", new BigDecimal(25));
+        Assert.assertThat(resling.getPriceWithTax(), Matchers.equalTo(new BigDecimal("36.31")));
+    }
+
+    @Test
+    public void shouldReturnProperPriceWithTaxAndExciseForFuelCanister(){
+        ExciseProducts fuel = new FuelCanister("Fuel", new BigDecimal(50));
+        Assert.assertThat(fuel.getPriceWithTax(), Matchers.equalTo(new BigDecimal("67.06")));
+    }
+
+    @Test
+    public void shouldPrintInvoiceWithVariousItemsIncludingExciseProducts(){
+        invoice.addProduct(new TaxFreeProduct("Kubek", new BigDecimal("5")), 2);
+        invoice.addProduct(new DairyProduct("Kozi Serek", new BigDecimal("10")), 3);
+        invoice.addProduct(new BottleOfWine("Wine", new BigDecimal("25")));
+        String result = invoice.printListOfProducts();
+        int invoiceNumber = invoice.getNumber();
+        String expectedMessage = "Number: "+invoiceNumber+"\n"+
+                """
+                Kubek 2 10
+                Kozi Serek 3 32.40
+                Wine 1 36.31
+                Amount of products: 6
+                """;
+        Assert.assertEquals(expectedMessage, result);
+    }
+
+
 }
